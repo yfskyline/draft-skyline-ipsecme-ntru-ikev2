@@ -52,16 +52,16 @@
     <workgroup>IPSECME</workgroup>
     <keyword>Internet-Draft</keyword>
     <abstract>
-      <t> 
+      <t>
 	  This document specifies the use of NTRU in the Internet Key Exchange Protocol Version 2 (IKEv2), following the framework defined in RFC 9370.
       RFC 9370 introduces a mechanism that enables multiple key encapsulation mechanisms (KEMs) to be used within IKEv2, allowing up to seven additional key exchange methods to be negotiated alongside the initial key exchange.
       This document defines how NTRU can be used as an additional key exchange method to improve the post-quantum security of IKEv2 by broadening algorithmic diversity.
 	  </t>
-	  
-	  <t> 
-	  [EDNOTE: IANA KE code points for NTRU will be needed to be assigned. ] 
+	
+	  <t>
+	  [EDNOTE: IANA KE code points for NTRU will be needed to be assigned. ]
 	  </t>
-	  
+	
     </abstract>
   </front>
   <middle>
@@ -69,7 +69,7 @@
 <section anchor="introduction">
     <name>Introduction</name>
 	<t>The IKEv2 as specified in <xref target="RFC7296"/>, uses the Diffie-Hellman (DH) or the Elliptic Curve Diffie-Hellman (ECDH) algorithm to establish a shared secret between an initiator and a responder. However, the advent of a Cryptographically Relevant Quantum Computer (CRQC) defined in <xref target="I-D.D25"/> would pose a significant threat to the security of DH and ECDH.
-	To address this problem, the Mixing Preshared Keys in IKEv2 specification <xref target="RFC8784"/> was introduced as a temporary option. After that, PQ/T Hybrid Key Encapsulation Mechanism (KEM) in IKEv2 was specified, which combines post-quantum and classical KEMs to ensure security against both classical and quantum adversaries. 
+	To address this problem, the Mixing Preshared Keys in IKEv2 specification <xref target="RFC8784"/> was introduced as a temporary option. After that, PQ/T Hybrid Key Encapsulation Mechanism (KEM) in IKEv2 was specified, which combines post-quantum and classical KEMs to ensure security against both classical and quantum adversaries.
     To enable PQ/T Hybrid KEMs in IKEv2, <xref target="RFC9370"/> extends the IKEv2 specification to allow multiple key exchanges to take place during the computation of a shared secret in the Security Association (SA) setup.
 	</t>
 	
@@ -84,7 +84,7 @@
 	To improve the diversity of post-quantum KEM algorithms, this document proposes to include NTRU <xref target="I-D.F25"/>-specifically, the version of NIST Post-Quantum Cryptography (PQC) round 3 <xref target="NTRU"/> as one of the algorithms usable within the framework defined in <xref target="RFC9370"/>.
 	The inclusion of NTRU increases algorithmic diversity for two main reasons. First, although NTRU is lattice-based, its security is based on the NTRU problem and does not rely on the (Module) Learning With Errors ((M)LWE) problems. Second, it provides a tighter security proof for the desired security notion: indistinguishability under adaptive chosen-ciphertext attacks (IND-CCA2).
 	In addition to increasing algorithmic versatility, the absence of patents is beneficial to users. NTRU is patent-free, which has the advantage of allowing users to avoid patent issues.
-    NTRU is also a valuable choice from an implementation perspective, as its overall performance is comparable to that of ML-KEM, with notably faster encapsulation. 
+    NTRU is also a valuable choice from an implementation perspective, as its overall performance is comparable to that of ML-KEM, with notably faster encapsulation.
 	</t>
       <section anchor="kems">
         <name>KEMs</name>
@@ -107,7 +107,7 @@
 		It offers good performance, as well as small and balanced key and ciphertext sizes.
 		The parameters of NTRU were chosen based on the three security levels defined in the NIST PQC Project: Levels 1, 3, and 5.
 		These levels correspond to the hardness of breaking AES-128, AES-192 and AES-256.
-		Also, NTRU defines two families of parameters: NTRU-HPS and NTRU-HRSS. 
+		Also, NTRU defines two families of parameters: NTRU-HPS and NTRU-HRSS.
 		The NTRU-HPS consists of three parameter sets: ntruhps2048677, ntruhps4096821, and ntruhps40961229, corresponding to security levels 1, 3, and 5, respectively.
 		The NTRU-HRSS includes two parameter sets: ntruhrss701 and ntruhrss1373, corresponding to security levels 1 and 5, respectively.</t>
 
@@ -125,19 +125,19 @@ described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and 
 appear in all capitals, as shown here.</t>
       </section>
 </section>
-    
+
     <section anchor="ntru-in-ikev2">
       <name>NTRU in IKEv2</name>
       <section anchor="ntru-in-ikeintermediate-messages">
         <name>NTRU in IKE_INTERMEDIATE or CREATE_CHILD_SA messages</name>
-        <t>NTRU key exchanges can be negotiated in IKE_INTERMEDIATE or IKE_FOLLOWUP_KE messages as defined in the Multiple Key Exchanges in IKEv2 specification <xref target="RFC9370"/>. We summarize them here for completeness. </t> 
+        <t>NTRU key exchanges can be negotiated in IKE_INTERMEDIATE or IKE_FOLLOWUP_KE messages as defined in the Multiple Key Exchanges in IKEv2 specification <xref target="RFC9370"/>. We summarize them here for completeness. </t>
 		<t>Section 2.2.2 of <xref target="RFC9370"/> specifies that KEi(0), KEr(0) are regular key exchange messages in the first IKE_SA_INIT exchange which end up generating a set of keying material, SK_d, SK_a[i/r], and SK_e[i/r]. The peers then perform an IKE_INTERMEDIATE exchange, carrying new Key Exchange payloads. These are protected with the SK_e[i/r] and SK_a[i/r] keys which were derived from the IKE_SA_INIT as per Section 3.3.1 of the Intermediate Exchange in IKEv2 document <xref target="RFC9242"/>. The initiator generates an NTRU keypair (sk, pk) using KeyGen(), and sends the public key (pk) to the responder inside a KEi(1) payload. The responder will encapsulate a shared secret ss using Encaps(pk), and the resulting ciphertext (ct) is sent to initiator using the KEr(1). After the initiator receives KEr(1), it will decapsulate it using Decaps(sk, ct). Both Encaps and Decaps return the shared secret (ss), and both peers have a common shared secret SK(1) at the end of this KE(1) exchange.
 			The NTRU shared secret is stirred into new keying material SK_d, SK_a[i/r], and SK_e[i/r] as defined in Section 2.2.2 of the Multiple Key Exchanges in IKEv2 document <xref target="RFC9370"/>. Afterwards the peers continue to the IKE_AUTH exchange phase as defined in Section 3.3.2 of the Intermediate Exchange in IKEv2 specification <xref target="RFC9242"/>.</t>
 		<t>NTRU can also be used to create or rekey a Child SA or rekey the IKE SA by using an IKE_FOLLOWUP_KE message after a CREATE_CHILD_SA message. After the NTRU additional key exchange KE(1) has taken place using and IKE_FOLLOWUP_KE exchange, the IKE or Child SA are rekeyed by stirring the new NTRU shared secret SK(1) in SKEYSEED and KEYMAT as specified in Section 2.2.4 of <xref target="RFC9370"/>.</t>
 		
 		<t>The ntruhps4096821, ntruhps40961229, and ntruhrss1373 public keys and ciphertexts may make UDP packet sizes larger typical network MTUs (1500 bytes). Thus, IKE_INTERMEDIATE or IKE_FOLLOWUP_KE messages carrying NTRU public keys and ciphertexts may be IKEv2 fragmented as per the IKEv2 Message Fragmentation specification <xref target="RFC7383"/>. </t>
 		
-		<t>As the payload lengths of ntruhps2048677, ntruhrss701, and ntruhps4096821 are less than the typical network MTUs (1500 bytes), these parameters <bcp14>MAY</bcp14> be used in IKE_SA_INIT, resulting in a configuration where only post-quantum KEMs are used. 
+		<t>As the payload lengths of ntruhps2048677, ntruhrss701, and ntruhps4096821 are less than the typical network MTUs (1500 bytes), these parameters <bcp14>MAY</bcp14> be used in IKE_SA_INIT, resulting in a configuration where only post-quantum KEMs are used.
 		
 		The other parameters, ntruhps40961229 and ntruhrss1373 <bcp14>SHOULD NOT</bcp14> be used in IKE_SA_INIT messages that could exceed typical network MTUs and cannot be fragmented using IKEv2 fragmentation. </t>
       </section>
@@ -160,9 +160,9 @@ appear in all capitals, as shown here.</t>
 |                                                               |
 ~                       Key Exchange Data                       ~
 |                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ]]>
-</artwork> 
+</artwork>
 </figure>
 
 	<t>The Key Exchange Data from the initiator to the responder contains the public key (pk) from the KeyGen() operation encoded as a raw byte array as defined in <xref target="I-D.F25"/>.</t>
@@ -215,7 +215,7 @@ appear in all capitals, as shown here.</t>
 </table>
 
       </section>
-      
+
 
     </section>
 
@@ -242,7 +242,7 @@ N(INTERMEDIATE_EXCHANGE_SUPPORTED)
     Transform ADDKE2 (ID = TBD50)
     Transform ADDKE2 (ID = TBD52)
     Transform ADDKE2 (ID = NONE)
-    
+
                    <--- HDR(IKE_SA_INIT), SAr1(.. ADDKE*...),
                         KEr(Curve25519), Nr, N(IKEV2_FRAG_SUPPORTED),
                         N(INTERMEDIATE_EXCHANGE_SUPPORTED)
@@ -258,8 +258,8 @@ HDR(IKE_INTERMEDIATE), SK {KEi(1)(TBD50)} -->
                    <--- HDR(IKE_INTERMEDIATE), SK {KEr(1)(TBD50)}
 
 HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
-                      <--- HDR(IKE_AUTH), SK{IDr, AUTH, SAr2,TSi, TSr}                         
-]]></artwork> 
+                      <--- HDR(IKE_AUTH), SK{IDr, AUTH, SAr2,TSi, TSr}
+]]></artwork>
 </figure>
 
 
@@ -272,22 +272,22 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
     <section anchor="security-considerations">
       <name>Security Considerations</name>
       <t>All security considerations from <xref target="RFC9242"/> and <xref target="RFC9370"/> apply to the NTRU exchanges described in this specification.</t>
-      
+
       <t>The NTRU public key generated by the initiator and the ciphertext generated by the responder use randomness (usually a seed) which <bcp14>MUST</bcp14> be independent of any other random seed used in the IKEv2 negotiation. For example, at the initiator, the NTRU and (EC)DH key pairs should not be generated from the same seed.
-	  
+	
 	  Also, nonces used in the derivation of SKEYSEED and KEYMAT <bcp14>MUST NOT</bcp14> be reused, in order to ensure the pseudorandomness of key derivation using the pseudorandom function defined in <xref target="RFC9370"/>.
 	  </t>
-      
-	  
-	  
+
+	
+	
     </section>
-    
+
 	<section anchor="iana-considerations">
       <name>IANA Considerations</name>
       <t>IANA is requested to assign five values for the names "ntruhps2048677", "ntruhrss701", "ntruhps40961229", "ntruhrss1373", and "ntruhps4096821"in the IKEv2 "Transform Type 4 - Key Exchange Method Transform IDs" and has listed this document as the reference. The Recipient Tests field should also point to this document:</t>
-	  
+	
 	  <t> [EDNOTE:  IANA KE code points for FrodoKEM might be assigned, we assume those code points in this spefication.</t>
-	  
+	
       <table anchor="tab1">
         <name>Updates to the IANA "Transform Type 4 - Key Exchange Method Transform IDs" table</name>
         <thead>
@@ -299,7 +299,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
             <th align="left">Reference</th>
           </tr>
         </thead>
-        <tbody> 
+        <tbody>
           <tr>
             <td align="left">TBD50</td>
             <td align="left">ntruhps2048677</td>
@@ -336,7 +336,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
             <td align="left">[TBD, this draft]</td>
           </tr>
 
-		  
+		
           <tr>
             <td align="left">55-1023</td>
             <td align="left">Unassigned</td>
@@ -354,7 +354,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
       <name>References</name>
       <references anchor="sec-normative-references">
         <name>Normative References</name>
-     
+
 
 		<reference anchor="RFC9242">
           <front>
@@ -368,7 +368,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="RFC" value="9242"/>
           <seriesInfo name="DOI" value="10.17487/RFC9242"/>
         </reference>
-        
+
 		<reference anchor="RFC9370">
           <front>
             <title>Multiple Key Exchanges in the Internet Key Exchange Protocol Version 2 (IKEv2)</title>
@@ -384,7 +384,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="RFC" value="9370"/>
           <seriesInfo name="DOI" value="10.17487/RFC9370"/>
         </reference>
-        
+
 		<reference anchor="RFC2119">
           <front>
             <title>Key words for use in RFCs to Indicate Requirement Levels</title>
@@ -398,7 +398,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="RFC" value="2119"/>
           <seriesInfo name="DOI" value="10.17487/RFC2119"/>
         </reference>
-        
+
 		<reference anchor="RFC8174">
           <front>
             <title>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
@@ -427,12 +427,12 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="DOI" value="10.17487/RFC7296"/>
         </reference>
       </references>
-	  
-	  
-	  
+	
+	
+	
       <references anchor="sec-informative-references">
         <name>Informative References</name>
-   
+
 
 		<reference anchor="I-D.F25" target="https://datatracker.ietf.org/doc/html/draft-fluhrer-cfrg-ntru-03">
           <front>
@@ -459,7 +459,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           </front>
           <seriesInfo name="Internet-Draft" value="draft-fluhrer-cfrg-ntru-03"/>
         </reference>
-        
+
 
 		<reference anchor="I-D.D25" target="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqt-hybrid-terminology-06">
           <front>
@@ -517,7 +517,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="RFC" value="8784"/>
           <seriesInfo name="DOI" value="10.17487/RFC8784"/>
         </reference>
-      
+
 		<reference anchor="RFC7383">
           <front>
             <title>Internet Key Exchange Protocol Version 2 (IKEv2) Message Fragmentation</title>
@@ -530,7 +530,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           <seriesInfo name="RFC" value="7383"/>
           <seriesInfo name="DOI" value="10.17487/RFC7383"/>
         </reference>
-       
+
 		<reference anchor="I-D.W25"  target="https://datatracker.ietf.org/doc/draft-wang-hybrid-kem-ikev2-frodo-02/">
           <front>
             <title>Post-quantum Hybrid Key Exchange in the IKEv2 with FrodoKEM</title>
@@ -554,7 +554,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
           </front>
           <seriesInfo name="FIPS Standard (Draft)" value=""/>
         </reference>
-	   
+	
 				<reference anchor="NTRU"  target="https://info.isl.ntt.co.jp/crypt/ntru/files/ntru.pdf">
           <front>
             <title>NTRU Algorithm Specifications And Supporting Documentation</title>
@@ -588,7 +588,7 @@ HDR(IKE_AUTH), SK{ IDi, AUTH, SAi2, TSi, TSr } --->
       <name>Acknowledgments</name>
       <t>To be added later.</t>
     </section>
-  
+
   </back>
-  
+
 </rfc>
